@@ -25,7 +25,6 @@ package terrarium;
 public class TerrariumApp extends javax.swing.JFrame {
 
     Terrarium terrarium;
-    TerrariumCanvas canvas;
     
     /**
      * Creates new form Terrarium
@@ -34,8 +33,8 @@ public class TerrariumApp extends javax.swing.JFrame {
         initComponents();
         
         terrarium = new Terrarium(getWidth(), getHeight());
-        canvas = new TerrariumCanvas(terrarium);
-        jScrollPane.add(canvas);
+        terrariumCanvas.setTerrarium(terrarium);
+        terrariumCanvas.start();
     }
 
     /**
@@ -47,7 +46,7 @@ public class TerrariumApp extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        jScrollPane = new javax.swing.JScrollPane();
+        terrariumCanvas = new terrarium.TerrariumCanvas();
         jMenuBar = new javax.swing.JMenuBar();
         jMenuFile = new javax.swing.JMenu();
         jMenuItemFileNew = new javax.swing.JMenuItem();
@@ -55,6 +54,18 @@ public class TerrariumApp extends javax.swing.JFrame {
         jMenuItemFileExit = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setResizable(false);
+
+        javax.swing.GroupLayout terrariumCanvasLayout = new javax.swing.GroupLayout(terrariumCanvas);
+        terrariumCanvas.setLayout(terrariumCanvasLayout);
+        terrariumCanvasLayout.setHorizontalGroup(
+            terrariumCanvasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 400, Short.MAX_VALUE)
+        );
+        terrariumCanvasLayout.setVerticalGroup(
+            terrariumCanvasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 279, Short.MAX_VALUE)
+        );
 
         jMenuFile.setMnemonic('f');
         jMenuFile.setText("File");
@@ -88,11 +99,11 @@ public class TerrariumApp extends javax.swing.JFrame {
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 400, Short.MAX_VALUE)
+            .addComponent(terrariumCanvas, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 279, Short.MAX_VALUE)
+            .addComponent(terrariumCanvas, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
 
         pack();
@@ -136,10 +147,10 @@ public class TerrariumApp extends javax.swing.JFrame {
 
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
+            @Override
             public void run() {
                 TerrariumApp app = new TerrariumApp();
                 app.setVisible(true);
-                new Thread(app.terrarium).start();
             }
         });
     }
@@ -149,7 +160,7 @@ public class TerrariumApp extends javax.swing.JFrame {
     private javax.swing.JMenu jMenuFile;
     private javax.swing.JMenuItem jMenuItemFileExit;
     private javax.swing.JMenuItem jMenuItemFileNew;
-    private javax.swing.JScrollPane jScrollPane;
     private javax.swing.JPopupMenu.Separator jSeparator1;
+    private terrarium.TerrariumCanvas terrariumCanvas;
     // End of variables declaration//GEN-END:variables
 }

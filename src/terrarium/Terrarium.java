@@ -21,23 +21,21 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Image;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.Timer;
 
 /**
  * Class of objects representing terrarium simulations.
  * 
  * @author Tim Vaughan <tgvaughan@gmail.com>
  */
-public class Terrarium implements Runnable {
+public class Terrarium {
     
     int width, height;
-
-    /**
-     * Length of time for a single tick (milliseconds)
-     */
-    int tickLength;
 
     InorganicCA inorganicCA;
     
@@ -57,7 +55,6 @@ public class Terrarium implements Runnable {
         this.height = height;
         
         inorganicCA = new InorganicCA(width, height);
-        tickLength = 200;
         
         image = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
     }
@@ -65,7 +62,7 @@ public class Terrarium implements Runnable {
     public Image render() {
         
         // Render inorganic
-        for (int i=0; i<width; i++) {
+        for (int i=0; i<height; i++) {
             for (int j=0; j<width; j++) {
                 int rgbCol;
                 switch(inorganicCA.getCellState(i, j)) {
@@ -73,30 +70,37 @@ public class Terrarium implements Runnable {
                         rgbCol = dirtCol.getRGB();
                         break;
                     case EMPTY:
-                        rgbCol = dirtCol.getRGB();
+                        rgbCol = emptyCol.getRGB();
                         break;
                     default:
                         rgbCol = 0;
                 }
-                image.setRGB(height-j, i, rgbCol);
+                image.setRGB(j, i, rgbCol);
             }
         }
         
         return image;
     }
-    
-    @Override
-    @SuppressWarnings("SleepWhileInLoop")
-    public void run() {
-        
-        while(true) {
-            try {
-                Thread.sleep(tickLength);
-            } catch (InterruptedException ex) {
-                return;
-            }
 
-            inorganicCA.updateStates();
+    /**
+     * Step terrarium state forward by one time unit.
+     */
+    public void tick() {
+        inorganicCA.updateStates();
+    }
+    
+    public void addDirt(int x, int y, int radius) {
+        
+        for (int i=y-radius; i<y+radius; i++) {
+            if (i<0 || i>=height)
+                continue;
+            
+            for (int j=x-radius; j<x+radius; j++) {
+                if (j<=0 || j>=width)
+                    continue;
+                inorganicCA.setCellState(i, j, InorganicCA.CellState.DIRT);
+            }
         }
+
     }
 }

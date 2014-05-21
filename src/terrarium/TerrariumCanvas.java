@@ -19,24 +19,83 @@ package terrarium;
 
 import java.awt.Graphics;
 import java.awt.Image;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionListener;
 import javax.swing.JPanel;
+import javax.swing.Timer;
 
 /**
  * Canvas on which Terrarium representation is drawn.
  * 
  * @author Tim Vaughan <tgvaughan@gmail.com>
  */
-public class TerrariumCanvas extends JPanel {
+public class TerrariumCanvas extends JPanel implements ActionListener, MouseListener {
     
     Terrarium terrarium;
 
-    public TerrariumCanvas(Terrarium terrarium) {
+    private final Timer timer;
+    
+    public TerrariumCanvas() {
+        timer = new Timer(200, this);
+    }
+
+    public void setTerrarium(Terrarium terrarium) {
         this.terrarium = terrarium;
+        addMouseListener(this);
+    }
+    
+    @Override
+    public void paintAll(Graphics g) {
+        super.paintAll(g);
+        
+        g.drawImage(terrarium.render(), 0, 0, null);
     }
 
     @Override
-    public void paintAll(Graphics g) {
-        g.drawImage(terrarium.render(), 0, 0, null);
+    protected void paintComponent(Graphics g) {
+        super.paintComponent(g);
+        
+        g.drawImage(terrarium.render(), 0, 0, getWidth(), getHeight(), null);
     }
     
+    
+
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        terrarium.tick();
+        repaint();
+    }
+    
+    public void start() {
+        timer.start();
+    }
+    
+    public void stop() {
+        timer.stop();
+    }
+
+    @Override
+    public void mouseClicked(MouseEvent e) {
+        terrarium.addDirt(e.getX()*terrarium.width/getWidth(),
+                e.getY()*terrarium.height/getWidth(), 5);
+    }
+
+    @Override
+    public void mousePressed(MouseEvent e) {
+    }
+
+    @Override
+    public void mouseReleased(MouseEvent e) {
+    }
+
+    @Override
+    public void mouseEntered(MouseEvent e) {
+    }
+
+    @Override
+    public void mouseExited(MouseEvent e) {
+    }
 }
