@@ -17,6 +17,9 @@
 
 package terrarium;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * CA used to handle inorganic aspects of simulation.
  *
@@ -54,6 +57,14 @@ public class InorganicCA {
         else
             cellsNext[i*width + j] = newState;
     }
+
+    public void setCellStateNow(int i, int j, CellState newState) {
+        if (i<0 || i>=height || j<0 || j>= width)
+            throw new IllegalArgumentException("Cannot alter wall cells.");
+        else
+            cells[i*width + j] = newState;
+    }
+
     
     void acceptNewStates() {
         System.arraycopy(cellsNext, 0, cells, 0, cells.length);
@@ -69,6 +80,28 @@ public class InorganicCA {
         if (getCellState(i,j)==CellState.DIRT && getCellState(i+1,j)==CellState.EMPTY)
             return CellState.EMPTY;
         
+        // Dirt subsides
+        
+        if (getCellState(i,j)==CellState.EMPTY
+                && getCellState(i,j+1)==CellState.DIRT
+                && getCellState(i-1,j+1)==CellState.DIRT)
+            return CellState.DIRT;
+        
+        if (getCellState(i,j)==CellState.EMPTY
+                && getCellState(i,j-1)==CellState.DIRT
+                && getCellState(i-1,j-1)==CellState.DIRT)
+            return CellState.DIRT;
+        
+        if (getCellState(i,j)==CellState.DIRT
+                && getCellState(i+1,j)==CellState.DIRT
+                && getCellState(i+1,j+1)==CellState.EMPTY)
+            return CellState.EMPTY;
+        
+        if (getCellState(i,j)==CellState.DIRT
+                && getCellState(i+1,j)==CellState.DIRT
+                && getCellState(i+1,j-1)==CellState.EMPTY)
+            return CellState.EMPTY;
+        
         return getCellState(i,j);
     }
     
@@ -80,5 +113,22 @@ public class InorganicCA {
         }
         
         acceptNewStates();
+    }
+
+    public String toString() {
+        Map<CellState,Integer> histogram = new HashMap<>();
+        for (CellState state : CellState.values())
+            histogram.put(state, 0);
+        
+        for (CellState cell : cells) {
+            histogram.put(cell, histogram.get(cell) + 1);
+        }
+
+        StringBuilder sb = new StringBuilder();
+        for (CellState state : CellState.values()) {
+            sb.append(state).append(":").append(histogram.get(state)).append(" ");
+        }
+        
+        return sb.toString();
     }
 }

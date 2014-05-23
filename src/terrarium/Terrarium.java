@@ -98,7 +98,9 @@ public class Terrarium {
             for (int j=x-radius; j<x+radius; j++) {
                 if (j<=0 || j>=width)
                     continue;
-                inorganicCA.setCellState(i, j, InorganicCA.CellState.DIRT);
+                
+                if ((i-y)*(i-y) + (j-x)*(j-x) < radius*radius)
+                    inorganicCA.setCellStateNow(i, j, InorganicCA.CellState.DIRT);
             }
         }
 
