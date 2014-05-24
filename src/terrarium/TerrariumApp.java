@@ -55,6 +55,8 @@ public class TerrariumApp extends JFrame {
         
         canvas = new TerrariumCanvas();
         getContentPane().add(canvas);
+        
+        setSize(640, 480);
     }
 
     final void createMenuBar() {
@@ -84,7 +86,7 @@ public class TerrariumApp extends JFrame {
                 fileSaveAction();
             }
         });
-        //fileSaveMenuItem.setEnabled(false);
+        fileSaveMenuItem.setEnabled(false);
         fileMenu.add(fileSaveMenuItem);
 
         fileMenu.addSeparator();
@@ -117,7 +119,14 @@ public class TerrariumApp extends JFrame {
                 return;
         }
         
-        new TerrariumWizard(this).setVisible(true);
+        TerrariumWizard wizard = new TerrariumWizard(this);
+        wizard.setVisible(true);
+        if (wizard.getTerrarium() != null) {
+            terrarium = wizard.getTerrarium();
+            canvas.setTerrarium(terrarium);
+            canvas.start();
+            fileSaveMenuItem.setEnabled(true);
+        }
     }
     
     /**

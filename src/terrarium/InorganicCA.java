@@ -61,8 +61,10 @@ public class InorganicCA {
     public void setCellStateNow(int i, int j, CellState newState) {
         if (i<0 || i>=height || j<0 || j>= width)
             throw new IllegalArgumentException("Cannot alter wall cells.");
-        else
+        else {
             cells[i*width + j] = newState;
+            cellsNext[i*width + j] = newState;
+        }
     }
 
     

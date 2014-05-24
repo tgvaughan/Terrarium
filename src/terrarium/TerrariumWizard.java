@@ -18,12 +18,15 @@
 package terrarium;
 
 import java.awt.Container;
-import java.awt.FlowLayout;
 import java.awt.Frame;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.text.NumberFormat;
 import javax.swing.JButton;
 import javax.swing.JDialog;
+import javax.swing.JFormattedTextField;
+import javax.swing.JLabel;
+import javax.swing.SpringLayout;
 
 /**
  * Wizard for creating terrariums.
@@ -31,34 +34,107 @@ import javax.swing.JDialog;
  * @author Tim Vaughan <tgvaughan@gmail.com>
  */
 public class TerrariumWizard extends JDialog {
+    
+    JFormattedTextField widthField, heightField;
+    
+    Terrarium terrarium;
 
     public TerrariumWizard(Frame frame) {
         super(frame, true);
 
-        setSize(400, 200);
-        setLocationRelativeTo(frame);
-        setLayout(new FlowLayout());
+        setTitle("Terrarium Wizard");
         
+        JLabel directionsLabel = new JLabel("<html>Create new terrarium with the<br>"
+                + "following properties:");
+        add(directionsLabel);
+        
+        JLabel widthLabel = new JLabel("Width:");
+        add(widthLabel);
+        
+        widthField = new JFormattedTextField(NumberFormat.getIntegerInstance());
+        widthField.setValue(640);
+        widthField.setColumns(6);
+        add(widthField);
+        
+        JLabel heightLabel = new JLabel("Height:");
+        add(heightLabel);
+        
+        heightField = new JFormattedTextField(NumberFormat.getIntegerInstance());
+        heightField.setValue(480);
+        heightField.setColumns(6);
+        add(heightField);
+
         JButton okButton = new JButton("Create");
         okButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                close();
+                
+                // There has GOT to be a cleaner way to do this!
+                // How can getting an already-parsed integer be this hard!?
+                Object heightValue = heightField.getValue();
+                int height;
+                if (heightValue instanceof Integer)
+                    height = (int)heightValue;
+                else
+                    height = (int)((long)heightValue);
+                
+                Object widthValue = widthField.getValue();
+                int width;
+                if (widthValue instanceof Integer)
+                    width = (int)widthValue;
+                else
+                    width = (int)((long)widthValue);
+                        
+                terrarium = new Terrarium(width, height);
+                setVisible(false);
             }
         });
         add(okButton);
         
         JButton abortButton = new JButton("Abort");
-        okButton.addActionListener(new ActionListener() {
+        abortButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                close();
+                setVisible(false);
             }
         });
         add(abortButton);
+        
+        Container cp = getContentPane();
+        SpringLayout layout = new SpringLayout();
+
+        layout.putConstraint(SpringLayout.NORTH, directionsLabel, 10, SpringLayout.NORTH, cp);
+        layout.putConstraint(SpringLayout.WEST, directionsLabel, 15, SpringLayout.WEST, cp);
+        
+        layout.putConstraint(SpringLayout.VERTICAL_CENTER, widthLabel, 0, SpringLayout.VERTICAL_CENTER, widthField);
+        layout.putConstraint(SpringLayout.WEST, widthLabel, 15, SpringLayout.WEST, cp);
+        
+        layout.putConstraint(SpringLayout.NORTH, widthField, 10, SpringLayout.SOUTH, directionsLabel);
+        layout.putConstraint(SpringLayout.WEST, widthField, 5, SpringLayout.EAST, widthLabel);
+
+        layout.putConstraint(SpringLayout.VERTICAL_CENTER, heightLabel, 0, SpringLayout.VERTICAL_CENTER, heightField);
+        layout.putConstraint(SpringLayout.EAST, heightLabel, 0, SpringLayout.EAST, widthLabel);
+        
+        layout.putConstraint(SpringLayout.NORTH, heightField, 5, SpringLayout.SOUTH, widthField);
+        layout.putConstraint(SpringLayout.WEST, heightField, 5, SpringLayout.EAST, widthLabel);
+        
+        layout.putConstraint(SpringLayout.EAST, okButton, -5, SpringLayout.WEST, abortButton);
+        layout.putConstraint(SpringLayout.SOUTH, okButton, -5 , SpringLayout.SOUTH, cp);
+        
+        layout.putConstraint(SpringLayout.EAST, abortButton, -5, SpringLayout.EAST, cp);
+        layout.putConstraint(SpringLayout.SOUTH, abortButton, -5, SpringLayout.SOUTH, cp);
+        
+        setLayout(layout);
+
+        setSize(300, 200);
+        setLocationRelativeTo(frame);
+        
     }
     
-    void close() {
-        setVisible(false);
+    /**
+     * @return Terrarium object, if created.  Null otherwise.
+     */
+    public Terrarium getTerrarium() {
+        return terrarium;
     }
 }

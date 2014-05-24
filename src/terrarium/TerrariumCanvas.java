@@ -39,7 +39,7 @@ public class TerrariumCanvas extends JPanel implements ActionListener, MouseList
     private final Timer timer;
     
     public TerrariumCanvas() {
-        timer = new Timer(10, this);
+        timer = new Timer(20, this);
     }
     
     public void setTerrarium(Terrarium terrarium) {
@@ -79,6 +79,11 @@ public class TerrariumCanvas extends JPanel implements ActionListener, MouseList
         timer.stop();
     }
 
+    public void setFrameRate(double fps) {
+        int millis = (int)(1000.0/fps);
+        timer.setDelay(millis);
+    }
+    
     @Override
     public void mouseClicked(MouseEvent e) {
         if (terrarium != null)
