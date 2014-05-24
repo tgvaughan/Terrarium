@@ -27,6 +27,7 @@ import javax.swing.JDialog;
 import javax.swing.JFormattedTextField;
 import javax.swing.JLabel;
 import javax.swing.SpringLayout;
+import javax.swing.text.NumberFormatter;
 
 /**
  * Wizard for creating terrariums.
@@ -51,16 +52,14 @@ public class TerrariumWizard extends JDialog {
         JLabel widthLabel = new JLabel("Width:");
         add(widthLabel);
         
-        widthField = new JFormattedTextField(NumberFormat.getIntegerInstance());
-        widthField.setValue(640);
+        widthField = new JFormattedTextField(640);
         widthField.setColumns(6);
         add(widthField);
         
         JLabel heightLabel = new JLabel("Height:");
         add(heightLabel);
         
-        heightField = new JFormattedTextField(NumberFormat.getIntegerInstance());
-        heightField.setValue(480);
+        heightField = new JFormattedTextField(480);
         heightField.setColumns(6);
         add(heightField);
 
@@ -69,23 +68,11 @@ public class TerrariumWizard extends JDialog {
             @Override
             public void actionPerformed(ActionEvent e) {
                 
-                // There has GOT to be a cleaner way to do this!
-                // How can getting an already-parsed integer be this hard!?
-                Object heightValue = heightField.getValue();
-                int height;
-                if (heightValue instanceof Integer)
-                    height = (int)heightValue;
-                else
-                    height = (int)((long)heightValue);
+                int width = (int)widthField.getValue();
+                int height = (int)heightField.getValue();
                 
-                Object widthValue = widthField.getValue();
-                int width;
-                if (widthValue instanceof Integer)
-                    width = (int)widthValue;
-                else
-                    width = (int)((long)widthValue);
-                        
                 terrarium = new Terrarium(width, height);
+                
                 setVisible(false);
             }
         });
