@@ -29,7 +29,7 @@ public class InorganicCA {
     
     int width, height;
 
-    public enum CellState {EMPTY, DIRT, WALL};
+    public enum CellState {EMPTY, DIRT, WATER, STEAM, WALL};
     CellState[] cells, cellsNext;
     
     public InorganicCA(int width, int height) {
@@ -115,6 +115,7 @@ public class InorganicCA {
         acceptNewStates();
     }
 
+    @Override
     public String toString() {
         Map<CellState,Integer> histogram = new HashMap<>();
         for (CellState state : CellState.values())
@@ -128,6 +129,22 @@ public class InorganicCA {
         for (CellState state : CellState.values()) {
             sb.append(state).append(":").append(histogram.get(state)).append(" ");
         }
+        
+        return sb.toString();
+    }
+    
+    public String serialize() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("{");
+        sb.append("\"width\": ").append(width);
+        sb.append(", \"height\": ").append(height);
+        sb.append(", \"states\": [");
+        for (int i=0; i<cells.length; i++) {
+            if (i>0)
+                sb.append(",");
+            sb.append(cells[i].ordinal());
+        }
+        sb.append("]}");
         
         return sb.toString();
     }

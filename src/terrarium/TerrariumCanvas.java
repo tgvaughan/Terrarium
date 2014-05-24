@@ -34,37 +34,41 @@ import javax.swing.Timer;
  */
 public class TerrariumCanvas extends JPanel implements ActionListener, MouseListener {
     
-    Terrarium terrarium;
+    private Terrarium terrarium;
 
     private final Timer timer;
     
     public TerrariumCanvas() {
         timer = new Timer(10, this);
     }
-
+    
     public void setTerrarium(Terrarium terrarium) {
         this.terrarium = terrarium;
         addMouseListener(this);
     }
-    
+
     @Override
     public void paintAll(Graphics g) {
         super.paintAll(g);
         
-        g.drawImage(terrarium.render(), 0, 0, null);
+        if (terrarium != null)
+            g.drawImage(terrarium.render(), 0, 0, null);
     }
 
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
         
-        g.drawImage(terrarium.render(), 0, 0, getWidth(), getHeight(), null);
+        if (terrarium != null)
+            g.drawImage(terrarium.render(), 0, 0, getWidth(), getHeight(), null);
     }
     
     @Override
     public void actionPerformed(ActionEvent e) {
-        terrarium.tick();
-        repaint();
+        if (terrarium != null) {
+            terrarium.tick();
+            repaint();
+        }
     }
     
     public void start() {
@@ -77,8 +81,9 @@ public class TerrariumCanvas extends JPanel implements ActionListener, MouseList
 
     @Override
     public void mouseClicked(MouseEvent e) {
-        terrarium.addDirt(e.getX()*terrarium.width/getWidth(),
-                e.getY()*terrarium.height/getHeight(), 20);
+        if (terrarium != null)
+            terrarium.addDirt(e.getX()*terrarium.width/getWidth(),
+                    e.getY()*terrarium.height/getHeight(), 20);
     }
 
     @Override
