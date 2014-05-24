@@ -21,13 +21,11 @@ import java.awt.Container;
 import java.awt.Frame;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.text.NumberFormat;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JFormattedTextField;
 import javax.swing.JLabel;
 import javax.swing.SpringLayout;
-import javax.swing.text.NumberFormatter;
 
 /**
  * Wizard for creating terrariums.

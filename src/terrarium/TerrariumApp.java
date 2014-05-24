@@ -20,11 +20,12 @@ import java.awt.HeadlessException;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.PrintStream;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import javax.imageio.ImageIO;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
@@ -36,6 +37,7 @@ import javax.swing.UIManager;
 import javax.swing.UIManager.LookAndFeelInfo;
 import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.filechooser.FileFilter;
+import javax.swing.filechooser.FileNameExtensionFilter;
 
 /**
  *
@@ -44,8 +46,9 @@ import javax.swing.filechooser.FileFilter;
 public class TerrariumApp extends JFrame {
 
     JMenuBar menuBar;
-    JMenu fileMenu;
+    JMenu fileMenu, viewMenu;
     JMenuItem fileNewMenuItem, fileSaveMenuItem, fileExitMenuItem;
+    JMenuItem viewBackgroundMenuItem;
     
     TerrariumCanvas canvas;
     Terrarium terrarium;
@@ -101,6 +104,19 @@ public class TerrariumApp extends JFrame {
             }
         });
         fileMenu.add(fileExitMenuItem);
+        
+        viewMenu = new JMenu("View");
+        viewMenu.setMnemonic(KeyEvent.VK_V);
+        menuBar.add(viewMenu);
+        
+        viewBackgroundMenuItem = new JMenuItem("Background image", KeyEvent.VK_B);
+        viewBackgroundMenuItem.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                viewBackgroundAction();
+            }
+        });
+        viewMenu.add(viewBackgroundMenuItem);
 
         setJMenuBar(menuBar);
     }
@@ -177,6 +193,26 @@ public class TerrariumApp extends JFrame {
     void fileExitAction() {
         setVisible(false);
         System.exit(0);
+    }
+    
+    void viewBackgroundAction() {
+        JFileChooser fc = new JFileChooser();
+        fc.setDialogTitle("Select background image file...");
+        fc.setFileFilter(new FileNameExtensionFilter(
+                "Images", "jpeg", "jpg", "gif", "png"));
+        if (fc.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
+            File file = fc.getSelectedFile();
+            
+            try {
+                BufferedImage img = ImageIO.read(file);
+                canvas.setBackgroundImage(img);
+                
+            } catch (IOException ex) {
+                JOptionPane.showMessageDialog(this,
+                        "Error loading file " + file.getName() + ". Aborting.",
+                        "Error", JOptionPane.ERROR_MESSAGE);
+            }
+        }
     }
 
     /**

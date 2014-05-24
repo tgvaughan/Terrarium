@@ -23,7 +23,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import java.awt.event.MouseMotionListener;
 import javax.swing.JPanel;
 import javax.swing.Timer;
 
@@ -35,7 +34,8 @@ import javax.swing.Timer;
 public class TerrariumCanvas extends JPanel implements ActionListener, MouseListener {
     
     private Terrarium terrarium;
-
+    private Image backgroundImage;
+    
     private final Timer timer;
     
     public TerrariumCanvas() {
@@ -46,18 +46,18 @@ public class TerrariumCanvas extends JPanel implements ActionListener, MouseList
         this.terrarium = terrarium;
         addMouseListener(this);
     }
-
-    @Override
-    public void paintAll(Graphics g) {
-        super.paintAll(g);
-        
-        if (terrarium != null)
-            g.drawImage(terrarium.render(), 0, 0, null);
+    
+    public void setBackgroundImage(Image image) {
+        backgroundImage = image;
+        repaint();
     }
-
+    
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
+        
+        if (backgroundImage != null)
+            g.drawImage(backgroundImage, 0, 0, getWidth(), getHeight(), null);
         
         if (terrarium != null)
             g.drawImage(terrarium.render(), 0, 0, getWidth(), getHeight(), null);

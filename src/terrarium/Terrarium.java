@@ -34,8 +34,8 @@ public class Terrarium {
     
     BufferedImage image;
     
-    Color dirtCol = new Color(150, 40, 0);
-    Color emptyCol = new Color(100, 100, 255);
+    Color dirtCol = new Color(139, 69, 19, 255);
+    Color emptyCol = new Color(100, 100, 255, 0);
     
     /**
      * Create a new terrarium simulation.
@@ -49,7 +49,7 @@ public class Terrarium {
         
         inorganicCA = new InorganicCA(width, height);
         
-        image = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+        image = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
     }
 
     public Image render() {
