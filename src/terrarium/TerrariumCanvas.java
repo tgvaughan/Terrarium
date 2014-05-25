@@ -18,7 +18,6 @@
 package terrarium;
 
 import java.awt.Graphics;
-import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
@@ -34,33 +33,33 @@ import javax.swing.Timer;
 public class TerrariumCanvas extends JPanel implements ActionListener, MouseListener {
     
     private Terrarium terrarium;
-    private Image backgroundImage;
     
     private final Timer timer;
     
+    /**
+     * Construct a new empty terrarium canvas.
+     */
     public TerrariumCanvas() {
         timer = new Timer(20, this);
     }
     
+    /**
+     * Set the terrarium object the canvas will display.
+     * 
+     * @param terrarium 
+     */
     public void setTerrarium(Terrarium terrarium) {
         this.terrarium = terrarium;
         addMouseListener(this);
     }
-    
-    public void setBackgroundImage(Image image) {
-        backgroundImage = image;
-        repaint();
-    }
+
     
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
-        
-        if (backgroundImage != null)
-            g.drawImage(backgroundImage, 0, 0, getWidth(), getHeight(), null);
-        
+
         if (terrarium != null)
-            g.drawImage(terrarium.render(), 0, 0, getWidth(), getHeight(), null);
+            terrarium.render(g, getWidth(), getHeight());
     }
     
     @Override
@@ -71,14 +70,26 @@ public class TerrariumCanvas extends JPanel implements ActionListener, MouseList
         }
     }
     
+    /**
+     * Start the terrarium simulation.
+     */
     public void start() {
         timer.start();
     }
     
+    /**
+     * Stop/pause the simulation.
+     */
     public void stop() {
         timer.stop();
     }
 
+    /**
+     * Set the frame rate of the simulation.  The default is 50 frames
+     * per second.
+     * 
+     * @param fps frames per second
+     */
     public void setFrameRate(double fps) {
         int millis = (int)(1000.0/fps);
         timer.setDelay(millis);

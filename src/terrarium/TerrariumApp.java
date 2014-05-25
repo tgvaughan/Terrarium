@@ -40,15 +40,15 @@ import javax.swing.filechooser.FileFilter;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
 /**
+ * Main application class for the terrarium simulator.
  *
  * @author Tim Vaughan <tgvaughan@gmail.com>
  */
 public class TerrariumApp extends JFrame {
 
     JMenuBar menuBar;
-    JMenu fileMenu, viewMenu;
+    JMenu fileMenu;
     JMenuItem fileNewMenuItem, fileSaveMenuItem, fileExitMenuItem;
-    JMenuItem viewBackgroundMenuItem;
     
     TerrariumCanvas canvas;
     Terrarium terrarium;
@@ -104,19 +104,6 @@ public class TerrariumApp extends JFrame {
             }
         });
         fileMenu.add(fileExitMenuItem);
-        
-        viewMenu = new JMenu("View");
-        viewMenu.setMnemonic(KeyEvent.VK_V);
-        menuBar.add(viewMenu);
-        
-        viewBackgroundMenuItem = new JMenuItem("Background image", KeyEvent.VK_B);
-        viewBackgroundMenuItem.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                viewBackgroundAction();
-            }
-        });
-        viewMenu.add(viewBackgroundMenuItem);
 
         setJMenuBar(menuBar);
     }
@@ -190,29 +177,12 @@ public class TerrariumApp extends JFrame {
         }
     }
 
+    /**
+     * Handles exiting the program.
+     */
     void fileExitAction() {
         setVisible(false);
         System.exit(0);
-    }
-    
-    void viewBackgroundAction() {
-        JFileChooser fc = new JFileChooser();
-        fc.setDialogTitle("Select background image file...");
-        fc.setFileFilter(new FileNameExtensionFilter(
-                "Images", "jpeg", "jpg", "gif", "png"));
-        if (fc.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
-            File file = fc.getSelectedFile();
-            
-            try {
-                BufferedImage img = ImageIO.read(file);
-                canvas.setBackgroundImage(img);
-                
-            } catch (IOException ex) {
-                JOptionPane.showMessageDialog(this,
-                        "Error loading file " + file.getName() + ". Aborting.",
-                        "Error", JOptionPane.ERROR_MESSAGE);
-            }
-        }
     }
 
     /**
@@ -233,7 +203,8 @@ public class TerrariumApp extends JFrame {
                     break;
                 }
             }
-        } catch (ClassNotFoundException | IllegalAccessException | InstantiationException | UnsupportedLookAndFeelException e) {
+        } catch (ClassNotFoundException | IllegalAccessException
+                | InstantiationException | UnsupportedLookAndFeelException e) {
             // Need to do anything here?
         }
 

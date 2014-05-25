@@ -18,6 +18,7 @@
 package terrarium;
 
 import java.awt.Color;
+import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.image.BufferedImage;
 
@@ -33,9 +34,10 @@ public class Terrarium {
     InorganicCA inorganicCA;
     
     BufferedImage image;
+    Image backgroundImage;
     
+    Color emptyCol = new Color(0, 0, 0, 0);
     Color dirtCol = new Color(139, 69, 19, 255);
-    Color emptyCol = new Color(100, 100, 255, 0);
     
     /**
      * Create a new terrarium simulation.
@@ -51,8 +53,41 @@ public class Terrarium {
         
         image = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
     }
+    
+    /**
+     * Use given image for terrarium background.
+     * 
+     * @param image 
+     */
+    public void setBackgroundImage(Image image) {
+        backgroundImage = image;
+    }
+    
+    /**
+     * Use a solid colour for the terrarium background.
+     * 
+     * @param colour 
+     */
+    public void setBackgroundColour(Color colour) {
+        BufferedImage bgImage = new BufferedImage(1, 1,
+                BufferedImage.TYPE_INT_ARGB);
+        
+        Graphics g = bgImage.getGraphics();
+        g.setColor(colour);
+        g.fillRect(0, 0, 1, 1);
+        backgroundImage = bgImage;
+    }
 
-    public Image render() {
+    /**
+     * Render the current state of the terrarium to the chosen graphics object.
+     * The image is rendered to the rectangle between (0,0) and (outputWidth,
+     * outputHeight).
+     * 
+     * @param g
+     * @param outputWidth
+     * @param outputHeight 
+     */
+    public void render(Graphics g, int outputWidth, int outputHeight) {
         
         // Render inorganic
         for (int i=0; i<height; i++) {
@@ -72,7 +107,8 @@ public class Terrarium {
             }
         }
         
-        return image;
+        g.drawImage(backgroundImage,0, 0, outputWidth, outputHeight, null);
+        g.drawImage(image, 0, 0, outputWidth, outputHeight, null);
     }
 
     /**
@@ -82,6 +118,14 @@ public class Terrarium {
         inorganicCA.updateStates();
     }
     
+    /**
+     * Add a circular patch of dirt with the chosen radius to the given
+     * coordinates.
+     * 
+     * @param x
+     * @param y
+     * @param radius 
+     */
     public void addDirt(int x, int y, int radius) {
         
         for (int i=y-radius; i<y+radius; i++) {
@@ -98,6 +142,12 @@ public class Terrarium {
         }
     }
     
+    /**
+     * Produce a string containing the information needed to reconstruct the
+     * terrarium.  Used for saving to disk.
+     * 
+     * @return Serialized representation.
+     */
     public String serialize() {
         StringBuilder sb = new StringBuilder();
         sb.append("{");
