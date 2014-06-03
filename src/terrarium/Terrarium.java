@@ -38,6 +38,8 @@ public class Terrarium {
     
     Color emptyCol = new Color(0, 0, 0, 0);
     Color dirtCol = new Color(139, 69, 19, 255);
+    //Color dirtCol = new Color(255,255,255, 255);
+    Color waterCol = new Color(0, 100, 255, 255);
     
     /**
      * Create a new terrarium simulation.
@@ -97,6 +99,9 @@ public class Terrarium {
                     case DIRT:
                         rgbCol = dirtCol.getRGB();
                         break;
+                    case WATER:
+                        rgbCol = waterCol.getRGB();
+                        break;
                     case EMPTY:
                         rgbCol = emptyCol.getRGB();
                         break;
@@ -119,14 +124,38 @@ public class Terrarium {
     }
     
     /**
-     * Add a circular patch of dirt with the chosen radius to the given
-     * coordinates.
+     * Add circular patch of dirt with chosen radius to the given coordinates.
      * 
      * @param x
      * @param y
      * @param radius 
      */
     public void addDirt(int x, int y, int radius) {
+        addState(InorganicCA.CellState.DIRT, x, y, radius);
+    }
+    
+    /**
+     * Add circular patch of water with chosen radius to the given coordinates.
+     * 
+     * @param x
+     * @param y
+     * @param radius 
+     */
+    public void addWater(int x, int y, int radius) {
+        addState(InorganicCA.CellState.WATER, x, y, radius);
+    }
+    
+    /**
+     * Add a circular patch of some state with the chosen radius to the given
+     * coordinates.  Note that only cells with states which are empty for the
+     * new state are updated.
+     * 
+     * @param state
+     * @param x
+     * @param y
+     * @param radius
+     */
+    private void addState(InorganicCA.CellState state, int x, int y, int radius) {
         
         for (int i=y-radius; i<y+radius; i++) {
             if (i<0 || i>=height)
@@ -136,8 +165,10 @@ public class Terrarium {
                 if (j<=0 || j>=width)
                     continue;
                 
-                if ((i-y)*(i-y) + (j-x)*(j-x) < radius*radius)
-                    inorganicCA.setCellStateNow(i, j, InorganicCA.CellState.DIRT);
+                if ((i-y)*(i-y) + (j-x)*(j-x) < radius*radius) {
+                    if (inorganicCA.getCellState(i, j).isEmptyFor(state))
+                        inorganicCA.setCellState(i, j, state);
+                }
             }
         }
     }

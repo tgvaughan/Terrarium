@@ -56,7 +56,7 @@ public class TerrariumWizard extends JDialog {
     
     JFormattedTextField widthField, heightField;
     JRadioButton solidRadioButton, imageRadioButton;
-    Color backgroundColour = new Color(100, 100, 255);
+    Color backgroundColour = new Color(200, 200, 255);
     Image backgroundImage;
     boolean useBackgroundImage = false;
     
@@ -101,7 +101,7 @@ public class TerrariumWizard extends JDialog {
         imageRadioButton = new JRadioButton("Image");
         group.add(imageRadioButton);
         
-        final BackgroundPreviewPanel bgPreview = new BackgroundPreviewPanel();
+        final BackgroundPreviewPanel bgPreview = new BackgroundPreviewPanel(backgroundColour);
         
         solidRadioButton.setSelected(true);
         solidRadioButton.addActionListener(new ActionListener() {
@@ -207,9 +207,9 @@ public class TerrariumWizard extends JDialog {
         Image image;
         Color solidCol;
 
-        public BackgroundPreviewPanel() {
+        public BackgroundPreviewPanel(Color initialSolid) {
             image = null;
-            solidCol = new Color(100, 100, 255);
+            solidCol = initialSolid;
         }
         
         public void setImage(Image image) {

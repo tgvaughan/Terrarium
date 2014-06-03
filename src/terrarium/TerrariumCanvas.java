@@ -97,9 +97,19 @@ public class TerrariumCanvas extends JPanel implements ActionListener, MouseList
     
     @Override
     public void mouseClicked(MouseEvent e) {
-        if (terrarium != null)
-            terrarium.addDirt(e.getX()*terrarium.width/getWidth(),
-                    e.getY()*terrarium.height/getHeight(), 20);
+        if (terrarium != null) {
+            switch(e.getButton()) {
+                case MouseEvent.BUTTON1:
+                    terrarium.addDirt(e.getX()*terrarium.width/getWidth(),
+                            e.getY()*terrarium.height/getHeight(), 20);
+                    break;
+                    
+                case MouseEvent.BUTTON3:
+                    terrarium.addWater(e.getX()*terrarium.width/getWidth(),
+                            e.getY()*terrarium.height/getHeight(), 20);
+            }
+
+        }
     }
 
     @Override

@@ -19,29 +19,46 @@ package terrarium;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Random;
 
 /**
  * CA used to handle inorganic aspects of simulation.
+ * 
+ * This is a block CA, which uses a 3x3 cell variant of the Margolus
+ * neighbourhood. 
  *
  * @author Tim Vaughan <tgvaughan@gmail.com>
  */
 public class InorganicCA {
     
     int width, height;
+    int phase;
+    
+    Random random;
 
-    public enum CellState {EMPTY, DIRT, WATER, STEAM, WALL};
-    CellState[] cells, cellsNext;
+    public enum CellState {
+        EMPTY, STEAM, WATER, DIRT, WALL;
+        
+        /**
+         * @param otherState
+         * @return true if this state is considered empty wrt otherState.
+         */
+        public boolean isEmptyFor(CellState otherState) {
+            return otherState.ordinal()>this.ordinal();
+        }
+    };
+    CellState[] cells;
     
     public InorganicCA(int width, int height) {
         this.width = width;
         this.height = height;
         
         cells = new CellState[width*height];
-        cellsNext = new CellState[width*height];
-        for (int i=0; i<cells.length; i++) {
+        for (int i=0; i<cells.length; i++)
             cells[i] = CellState.EMPTY;
-            cellsNext[i] = CellState.EMPTY;
-        }
+        
+        random = new Random();
+        phase = 0;
     }
     
     public CellState getCellState(int i, int j) {
@@ -55,66 +72,57 @@ public class InorganicCA {
         if (i<0 || i>=height || j<0 || j>= width)
             throw new IllegalArgumentException("Cannot alter wall cells.");
         else
-            cellsNext[i*width + j] = newState;
-    }
-
-    public void setCellStateNow(int i, int j, CellState newState) {
-        if (i<0 || i>=height || j<0 || j>= width)
-            throw new IllegalArgumentException("Cannot alter wall cells.");
-        else {
             cells[i*width + j] = newState;
-            cellsNext[i*width + j] = newState;
-        }
     }
 
+    private void swapStates(int i1, int j1, int i2, int j2) {
+        CellState tmp = getCellState(i1, j1);
+        setCellState(i1,j1, getCellState(i2,j2));
+        setCellState(i2,j2, tmp);
+    }
     
-    void acceptNewStates() {
-        System.arraycopy(cellsNext, 0, cells, 0, cells.length);
+    private boolean pushState(CellState state, int i1, int j1, int i2, int j2) {
+        if (getCellState(i1, j1)==state && getCellState(i2, j2).isEmptyFor(state)) {
+            swapStates(i1, j1, i2, j2);
+            return true;
+        } else
+            return false;
     }
+    
+    /**
+     * Updates the state of a single 3x3 block of cells centred on (i,j).
+     * 
+     * @param i
+     * @param j 
+     */
+    public void updateBlock(int i, int j) {
 
-    CellState getNextCellState(int i, int j) {
+        pushState(CellState.DIRT, i,j, i+1,j+1);
+        pushState(CellState.DIRT, i,j+1, i+1,j);
+        pushState(CellState.DIRT, i,j, i+1, j);
+        pushState(CellState.DIRT, i,j+1, i+1, j+1);
         
-        // Dirt falls down
+        pushState(CellState.WATER, i,j, i+1,j+1);
+        pushState(CellState.WATER, i,j+1, i+1,j);
+        pushState(CellState.WATER, i,j, i+1, j);
+        pushState(CellState.WATER, i,j+1, i+1, j+1);
         
-        if (getCellState(i,j)==CellState.EMPTY && getCellState(i-1,j)==CellState.DIRT)
-            return CellState.DIRT;
-        
-        if (getCellState(i,j)==CellState.DIRT && getCellState(i+1,j)==CellState.EMPTY)
-            return CellState.EMPTY;
-        
-        // Dirt subsides
-        
-        if (getCellState(i,j)==CellState.EMPTY
-                && getCellState(i,j+1)==CellState.DIRT
-                && getCellState(i-1,j+1)==CellState.DIRT)
-            return CellState.DIRT;
-        
-        if (getCellState(i,j)==CellState.EMPTY
-                && getCellState(i,j-1)==CellState.DIRT
-                && getCellState(i-1,j-1)==CellState.DIRT)
-            return CellState.DIRT;
-        
-        if (getCellState(i,j)==CellState.DIRT
-                && getCellState(i+1,j)==CellState.DIRT
-                && getCellState(i+1,j+1)==CellState.EMPTY)
-            return CellState.EMPTY;
-        
-        if (getCellState(i,j)==CellState.DIRT
-                && getCellState(i+1,j)==CellState.DIRT
-                && getCellState(i+1,j-1)==CellState.EMPTY)
-            return CellState.EMPTY;
-        
-        return getCellState(i,j);
+        if (!pushState(CellState.WATER, i,j, i,j+1))
+            pushState(CellState.WATER, i,j+1, i,j);
+        if (!pushState(CellState.WATER, i+1,j+1, i+1,j))
+            pushState(CellState.WATER, i+1,j, i+1,j+1);
+
     }
     
     public void updateStates() {
-        for (int i=0; i<height; i++) {
-            for (int j=0; j<width; j++) {
-                setCellState(i,j, getNextCellState(i, j));
+
+        //phase = random.nextInt(4);
+        phase = (phase+1)%4;
+        for (int i=phase/2; i<height; i += 2) {
+            for (int j=phase%2; j<width; j += 2) {
+                updateBlock(i,j);
             }
         }
-        
-        acceptNewStates();
     }
 
     @Override
