@@ -31,7 +31,7 @@ import java.util.*;
 public class InorganicCAOneCell extends InorganicCA {
     
     public InorganicCAOneCell(int width, int height) {
-    	super(width, height);
+        super(width, height);
     }
     
     private boolean pushState(int i1, int j1, int i2, int j2) {
@@ -50,65 +50,65 @@ public class InorganicCAOneCell extends InorganicCA {
      * @param angle the angle at which to try to move the cell
      */
     public Point updateCell(int i, int j, Angle angle) {
-    	if (angle.isBiggerThan(getCellState(i, j).maxAngle)) {
-    		return null;
-    	}
-    	int nextI = i + angle.dy;
-    	int dX = angle.dx;
-    	
-		// Randomise left/right movement (doesn't make much difference)
-		// if (random.nextBoolean()) {
-		// dX = -dX;
-		// }
-    	if (pushState(i,j, nextI,j+dX)) {
-    		return new Point(nextI,j+dX);
-    	}
-        if (pushState(i,j, nextI,j-dX)) {
-        	return new Point(nextI, j-dX);
+        if (angle.isBiggerThan(getCellState(i, j).maxAngle)) {
+            return null;
         }
-    	
+        int nextI = i + angle.dy;
+        int dX = angle.dx;
+        
+        // Randomise left/right movement (doesn't make much difference)
+        // if (random.nextBoolean()) {
+        // dX = -dX;
+        // }
+        if (pushState(i,j, nextI,j+dX)) {
+            return new Point(nextI,j+dX);
+        }
+        if (pushState(i,j, nextI,j-dX)) {
+            return new Point(nextI, j-dX);
+        }
+        
         return null;
 
     }
     
     /** Returns a list of the 8 neighbouring points (or fewer if they are off the edge) */
     public List<Point> neighbours(Point p) {
-    	List<Point> neighbours = new ArrayList<>();
-    	for (int i = Math.max(p.x - 1, 0); i < Math.min(p.x + 2, height); i++) {
-    		for (int j = Math.max(p.y - 1, 0); j < Math.min(p.y + 2, width); j++) {
-    			if (!(i == p.x && j == p.y)) {
-    				neighbours.add(new Point(i,j));
-    			}
-    		}
-    	}
-    	return neighbours;
+        List<Point> neighbours = new ArrayList<>();
+        for (int i = Math.max(p.x - 1, 0); i < Math.min(p.x + 2, height); i++) {
+            for (int j = Math.max(p.y - 1, 0); j < Math.min(p.y + 2, width); j++) {
+                if (!(i == p.x && j == p.y)) {
+                    neighbours.add(new Point(i,j));
+                }
+            }
+        }
+        return neighbours;
     }
     
     public void updateStates() {
-    	// Each cell can be updated only once per updateStates call
-    	Set<Point> updatedCells = new HashSet<>();
-    	for (Angle angle : Angle.values()) {
-    		if (angle == Angle.NONE) {
-    			continue;
-    		}
-	    	List<Point> toCheck = new LinkedList<>();
-	    	for (int i = 0; i < height; i++) {
-	    		for (int j = 0; j < width; j++) {
-	    			if (!angle.isBiggerThan(getCellState(i, j).maxAngle)) { // speed optimisation
-	    				toCheck.add(new Point(i,j));
-	    			}
-	    		}
-	    	}
-	    	while (!toCheck.isEmpty()) {
-	    		Point p = toCheck.remove(0);
-	    		if (!updatedCells.contains(p)) {
-	    			Point updated = updateCell(p.x, p.y, angle);
-	    			if (updated != null) {
-	    				updatedCells.add(updated);
-	    				toCheck.addAll(neighbours(p));
-	    			}
-	    		}
-	    	}
-    	}
+        // Each cell can be updated only once per updateStates call
+        Set<Point> updatedCells = new HashSet<>();
+        for (Angle angle : Angle.values()) {
+            if (angle == Angle.NONE) {
+                continue;
+            }
+            List<Point> toCheck = new LinkedList<>();
+            for (int i = 0; i < height; i++) {
+                for (int j = 0; j < width; j++) {
+                    if (!angle.isBiggerThan(getCellState(i, j).maxAngle)) { // speed optimisation
+                        toCheck.add(new Point(i,j));
+                    }
+                }
+            }
+            while (!toCheck.isEmpty()) {
+                Point p = toCheck.remove(0);
+                if (!updatedCells.contains(p)) {
+                    Point updated = updateCell(p.x, p.y, angle);
+                    if (updated != null) {
+                        updatedCells.add(updated);
+                        toCheck.addAll(neighbours(p));
+                    }
+                }
+            }
+        }
     }
 }

@@ -37,16 +37,16 @@ public class InorganicCA {
     Random random;
 
     public enum CellState {
-		EMPTY(Angle.NONE),
-		STEAM(Angle.UP),
-		WATER(Angle.HORIZONTAL),
-		DIRT(Angle.DIAG_DOWN),
-		WALL(Angle.NONE);
+        EMPTY(Angle.NONE),
+        STEAM(Angle.UP),
+        WATER(Angle.HORIZONTAL),
+        DIRT(Angle.DIAG_DOWN),
+        WALL(Angle.NONE);
         
-		/** The maximum "angle" the cell type can move */
+        /** The maximum "angle" the cell type can move */
         final Angle maxAngle;
         private CellState(Angle maxAngle) {
-        	this.maxAngle = maxAngle;
+            this.maxAngle = maxAngle;
         }
         /**
          * @param otherState
@@ -64,8 +64,8 @@ public class InorganicCA {
         final int dy;
         
         private Angle(int dx, int dy) {
-        	this.dx = dx;
-        	this.dy = dy;
+            this.dx = dx;
+            this.dy = dy;
         }
         
         /** Return whether the angle is "bigger" than another (ie further from down) */
