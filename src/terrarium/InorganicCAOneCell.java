@@ -23,12 +23,15 @@ import java.util.*;
 /**
  * CA used to handle inorganic aspects of simulation.
  * 
- * This is a single-cell CA which allows all cells to update once per frame, in some order,
- * even if they were initially unable to update.
- *
+ * This is a single-cell CA which allows all cells to update once per frame, in some order, even if
+ * they were initially unable to update.
+ * 
  * @author Glen Robertson
  */
 public class InorganicCAOneCell extends InorganicCA {
+    
+    /** Cheap "random" left/right decider */
+    boolean moveLeftFirst = true;
     
     public InorganicCAOneCell(int width, int height) {
         super(width, height);
@@ -46,7 +49,7 @@ public class InorganicCAOneCell extends InorganicCA {
      * Updates the state of a single cell.
      * 
      * @param i
-     * @param j 
+     * @param j
      * @param angle the angle at which to try to move the cell
      */
     public Point updateCell(int i, int j, Angle angle) {
@@ -56,19 +59,19 @@ public class InorganicCAOneCell extends InorganicCA {
         int nextI = i + angle.dy;
         int dX = angle.dx;
         
-        // Randomise left/right movement (doesn't make much difference)
-        // if (random.nextBoolean()) {
-        // dX = -dX;
-        // }
-        if (pushState(i,j, nextI,j+dX)) {
-            return new Point(nextI,j+dX);
+        // "Randomise" left/right movement
+        if (moveLeftFirst) {
+            dX = -dX;
         }
-        if (pushState(i,j, nextI,j-dX)) {
-            return new Point(nextI, j-dX);
+        moveLeftFirst = !moveLeftFirst;
+        if (pushState(i, j, nextI, j + dX)) {
+            return new Point(nextI, j + dX);
+        }
+        if (pushState(i, j, nextI, j - dX)) {
+            return new Point(nextI, j - dX);
         }
         
         return null;
-
     }
     
     /** Returns a list of the 8 neighbouring points (or fewer if they are off the edge) */
@@ -77,7 +80,7 @@ public class InorganicCAOneCell extends InorganicCA {
         for (int i = Math.max(p.x - 1, 0); i < Math.min(p.x + 2, height); i++) {
             for (int j = Math.max(p.y - 1, 0); j < Math.min(p.y + 2, width); j++) {
                 if (!(i == p.x && j == p.y)) {
-                    neighbours.add(new Point(i,j));
+                    neighbours.add(new Point(i, j));
                 }
             }
         }
@@ -95,7 +98,7 @@ public class InorganicCAOneCell extends InorganicCA {
             for (int i = 0; i < height; i++) {
                 for (int j = 0; j < width; j++) {
                     if (!angle.isBiggerThan(getCellState(i, j).maxAngle)) { // speed optimisation
-                        toCheck.add(new Point(i,j));
+                        toCheck.add(new Point(i, j));
                     }
                 }
             }
