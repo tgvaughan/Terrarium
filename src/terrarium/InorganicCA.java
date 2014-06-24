@@ -37,16 +37,43 @@ public class InorganicCA {
     Random random;
 
     public enum CellState {
-        EMPTY, STEAM, WATER, DIRT, WALL;
+        EMPTY(Angle.NONE),
+        STEAM(Angle.UP),
+        WATER(Angle.HORIZONTAL),
+        DIRT(Angle.DIAG_DOWN),
+        WALL(Angle.NONE);
         
+        /** The maximum "angle" the cell type can move */
+        final Angle maxAngle;
+        private CellState(Angle maxAngle) {
+            this.maxAngle = maxAngle;
+        }
         /**
          * @param otherState
          * @return true if this state is considered empty wrt otherState.
          */
         public boolean isEmptyFor(CellState otherState) {
-            return otherState.ordinal()>this.ordinal();
+            return otherState.ordinal() > this.ordinal();
         }
-    };
+    }
+    
+    public enum Angle {
+        NONE(0,0), DOWN(0,1), DIAG_DOWN(1,1), HORIZONTAL(1,0), DIAG_UP(1,-1), UP(0,-1);
+        
+        final int dx;
+        final int dy;
+        
+        private Angle(int dx, int dy) {
+            this.dx = dx;
+            this.dy = dy;
+        }
+        
+        /** Return whether the angle is "bigger" than another (ie further from down) */
+        public boolean isBiggerThan(Angle other) {
+            return this.ordinal() > other.ordinal();
+        }
+    }
+    
     CellState[] cells;
     
     public InorganicCA(int width, int height) {
@@ -75,7 +102,7 @@ public class InorganicCA {
             cells[i*width + j] = newState;
     }
 
-    private void swapStates(int i1, int j1, int i2, int j2) {
+    protected void swapStates(int i1, int j1, int i2, int j2) {
         CellState tmp = getCellState(i1, j1);
         setCellState(i1,j1, getCellState(i2,j2));
         setCellState(i2,j2, tmp);
